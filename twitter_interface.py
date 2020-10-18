@@ -45,7 +45,31 @@ def search(twit, query, count=1, **kwargs):
     url = _url_builder(q=query, result_type="recent", count=str(count), **kwargs)
     return twit.GetSearch(raw_query=url)
 
+def find_tweet_geo(tweet):
+    """
+    Returns coordinates for a tweet. Since not all tweets have coordinates set, we have to 
+    take some creative liberties. Here is how this works: 
+   
+    1) If there are geo coordinates set, use those. 
+    2) If the user has a location set, try to look up the coordinates for that. 
+    3) Default fallback is 0,0
+    
+    This is actually available if you pay for it:
+    https://developer.twitter.com/en/docs/twitter-api/v1/enrichments/overview/profile-geo
+    """
+    # Things we care about: 
+    print("Tweet Coordinates: %s" % str(tweet.coordinates))
+    print("Tweet language: %s" % str(tweet.lang))
+    print("User Location: %s" % str(tweet.user.location))
+    print("User Timezone: %s" % str(tweet.user.time_zone))
+    pass
+
 if __name__ == '__main__':
-    mytwit = twit_init()
-    print(search(mytwit, '#spacex'))
+    twit = twit_init()
+    tweet = twit.GetHomeTimeline(count=1)[0]
+    print(tweet.AsJsonString())
+    print("-=-=-")
+    print("%s - https://twitter.com/%s/status/%s" % (tweet.user.screen_name, tweet.user.screen_name, tweet.id))
+    print(tweet.text)
+    find_tweet_geo(tweet)
 
